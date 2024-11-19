@@ -38,6 +38,16 @@ def compute_file_hash(file_path):
         hasher.update(buf)
     return hasher.hexdigest()
 
+# Function to filter context based on query relevance
+def filter_relevant_context(db, query):
+    """Filter context to include only the most relevant parts of the document based on the query."""
+    similar_docs = db.similarity_search(query, k=3)  # Return top 3 most relevant documents
+    if similar_docs:
+        relevant_context = " ".join([doc.page_content for doc in similar_docs])
+        return relevant_context
+    else:
+        return "The document does not contain the information needed to answer this question."
+
 # Main logic for handling file uploads and processing
 if uploaded_file is not None:
     # Store the uploaded file in a temporary file
@@ -94,11 +104,10 @@ if uploaded_file is not None:
     # Create a button for submitting the question
     if st.button("Get Response"):
         if user_input:
-            # Find similar documents
-            similar_doc = db.similarity_search(user_input, k=1)
-            context = similar_doc[0].page_content if similar_doc else "No relevant information found."
+            # Filter relevant context based on the query
+            relevant_context = filter_relevant_context(db, user_input)
             
-            # Prepare the prompt
+            # Prepare the prompt with the filtered context
             template = """
             You are an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. Below is some information. 
             {context}
@@ -110,7 +119,7 @@ if uploaded_file is not None:
             llm_chain = RunnableSequence(prompt | llm)  # Updated chaining
 
             # Get the response
-            response = llm_chain.invoke({"context": context, "question": user_input})  # Updated method
+            response = llm_chain.invoke({"context": relevant_context, "question": user_input})  # Updated method
 
             # Display the response
             st.write("**Response:**", response)
