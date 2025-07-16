@@ -49,11 +49,11 @@ if uploaded_file is not None:
     file_hash = compute_file_hash(temp_file_path)
    
     # Set up Chroma vector store directory path
-    persist_directory = "C:/Users/320267920/OneDrive - Philips/Documents/streamlit/chromatb"
+    persist_directory = ""
     embeddings_file_path = os.path.join(persist_directory, f"{file_hash}_embeddings")
 
     # Set up Hugging Face LLM and embeddings
-    huggingfacehub_api_token = "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"
+    huggingfacehub_api_token = ""
     repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
     embeddings = HuggingFaceEmbeddings()  # Updated initialization
 
@@ -126,7 +126,7 @@ def get_image_as_base64(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-image_path = "C:/Users/320267920/OneDrive - Philips/Documents/streamlit/logo.png"
+image_path = ""
 image_base64 = get_image_as_base64(image_path)
 url = "https://example.com"
 
